@@ -1,0 +1,23 @@
+# Example: a typical test workflow that Smart Dependency Updater watches.
+#
+# The KEY detail is the `name:` below ("CI"). It must match the value you put
+# in `workflows: [...]` inside smart-dependency-updater.yml. When this workflow
+# fails on a Dependabot PR, the remediation workflow is triggered.
+
+name: CI
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+      - run: npm ci
+      - run: npm test

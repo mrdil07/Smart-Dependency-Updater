@@ -1,0 +1,39 @@
+# Example: drop this file into `.github/workflows/` in YOUR repository.
+#
+# It runs Smart Dependency Updater whenever your CI workflow finishes with a
+# failure. Using the `workflow_run` trigger is important: it is the only event
+# that gives the job WRITE permissions in response to a Dependabot PR, so the
+# bot can push the fix commit back to the pull request.
+
+name: Smart Dependency Updater
+
+on:
+  workflow_run:
+    # 👇 Must match the `name:` of your test/CI workflow exactly.
+    workflows: ['CI']
+    types: [completed]
+
+# The bot needs to read CI logs and write commits/comments to the PR branch.
+permissions:
+  contents: write
+  pull-requests: write
+  actions: read
+
+jobs:
+  remediate:
+    runs-on: ubuntu-latest
+    # Only act when the triggering CI run actually failed.
+    if: ${{ github.event.workflow_run.conclusion == 'failure' }}
+    steps:
+      - name: Run Smart Dependency Updater
+        uses: mrdil07/Smart-Dependency-Updater@v1
+        with:
+          # `github.token` already has write access in a workflow_run job.
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          # Store your key in: Settings → Secrets and variables → Actions.
+          openai-api-key: ${{ secrets.OPENAI_API_KEY }}
+          # Optional overrides (defaults shown):
+          # openai-model: gpt-4o
+          # max-attempts: '3'
+          # manual-label: needs-manual-fix
+          # dry-run: 'false'

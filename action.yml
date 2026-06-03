@@ -1,0 +1,106 @@
+name: 'Smart Dependency Updater'
+description: >-
+  AI-powered bot that analyzes failing CI/CD logs on dependency-update PRs
+  (Dependabot / Renovate) and auto-fixes breaking API changes, pushing the fix
+  directly to the pull request.
+author: 'mrdil07'
+
+branding:
+  icon: 'git-pull-request'
+  color: 'purple'
+
+inputs:
+  github-token:
+    description: >-
+      GitHub token used to read CI logs and write commits/comments to the PR.
+      The default `${{ github.token }}` works when the action runs from a
+      `workflow_run` trigger (which receives write permissions).
+    required: true
+    default: ${{ github.token }}
+
+  openai-api-key:
+    description: 'OpenAI API key. Store it in repository secrets — never inline it.'
+    required: true
+
+  openai-model:
+    description: 'OpenAI chat model used to generate fixes.'
+    required: false
+    default: 'gpt-4o'
+
+  openai-base-url:
+    description: >-
+      Optional custom base URL for an OpenAI-compatible endpoint
+      (e.g. Azure OpenAI or a self-hosted gateway). Leave empty for OpenAI.
+    required: false
+    default: ''
+
+  max-attempts:
+    description: >-
+      Maximum number of automatic fix commits before the bot gives up and
+      asks for manual intervention.
+    required: false
+    default: '3'
+
+  manual-label:
+    description: 'Label applied to the PR when manual intervention is required.'
+    required: false
+    default: 'needs-manual-fix'
+
+  dependency-authors:
+    description: >-
+      Comma-separated list of PR author logins treated as dependency bots.
+    required: false
+    default: 'dependabot[bot],renovate[bot],dependabot,renovate'
+
+  branch-prefixes:
+    description: >-
+      Comma-separated list of branch-name prefixes treated as dependency PRs
+      (used as a fallback when the author check does not match).
+    required: false
+    default: 'dependabot/,renovate/,deps/,dependabot-'
+
+  max-files:
+    description: 'Maximum number of source files sent to the model in one attempt.'
+    required: false
+    default: '6'
+
+  pr-number:
+    description: >-
+      Explicit pull request number to remediate. Use this for manual
+      `workflow_dispatch` runs. When omitted, the PR is resolved automatically
+      from the triggering event (e.g. `workflow_run`).
+    required: false
+    default: ''
+
+  commit-author-name:
+    description: 'Name used for the auto-fix commit author.'
+    required: false
+    default: 'smart-dependency-updater[bot]'
+
+  commit-author-email:
+    description: 'Email used for the auto-fix commit author.'
+    required: false
+    default: '41898282+github-actions[bot]@users.noreply.github.com'
+
+  dry-run:
+    description: >-
+      When `true`, the bot analyzes and comments with a proposed fix but does
+      not push any commit. Useful for evaluating the action safely.
+    required: false
+    default: 'false'
+
+outputs:
+  status:
+    description: >-
+      Outcome of the run: `fixed`, `skipped`, `unable-to-fix`,
+      `manual-intervention`, or `no-op`.
+  pr-number:
+    description: 'The pull request number that was processed (if any).'
+  commit-sha:
+    description: 'SHA of the fix commit that was pushed (empty if none).'
+  attempts:
+    description: 'Total number of automatic fix attempts recorded on the PR.'
+
+runs:
+  using: 'node20'
+  main: 'dist/index.js'

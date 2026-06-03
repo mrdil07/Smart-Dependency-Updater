@@ -1,0 +1,25 @@
+# Dependencies
+node_modules/
+
+# Build artifacts that are NOT the action bundle
+lib/
+coverage/
+*.tsbuildinfo
+
+# Logs
+*.log
+npm-debug.log*
+
+# Environment / secrets
+.env
+.env.local
+.env.*.local
+
+# Editor / OS
+.DS_Store
+.idea/
+.vscode/
+*.swp
+
+# NOTE: dist/ IS intentionally committed — it is the compiled action bundle
+# that GitHub Actions runs. Do not ignore it.
