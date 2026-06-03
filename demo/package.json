@@ -1,0 +1,13 @@
+{
+  "name": "smart-dependency-updater-demo",
+  "version": "1.0.0",
+  "private": true,
+  "description": "A deliberately breakable project for demoing Smart Dependency Updater.",
+  "license": "MIT",
+  "scripts": {
+    "test": "node --test"
+  },
+  "dependencies": {
+    "uuid": "^3.4.0"
+  }
+}

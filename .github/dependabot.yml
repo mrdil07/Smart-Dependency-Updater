@@ -1,0 +1,17 @@
+version: 2
+updates:
+  # Keep the action's own npm dependencies fresh.
+  - package-ecosystem: npm
+    directory: '/'
+    schedule:
+      interval: weekly
+    groups:
+      dependencies:
+        patterns:
+          - '*'
+
+  # Keep the GitHub Actions used in CI fresh.
+  - package-ecosystem: github-actions
+    directory: '/'
+    schedule:
+      interval: weekly
